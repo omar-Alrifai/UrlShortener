@@ -1,14 +1,19 @@
+using Microsoft.EntityFrameworkCore;
+
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddProblemDetails();
+builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<UrlStore>();
 var app = builder.Build();
 
 app.UseStatusCodePages();
 app.UseExceptionHandler();
 
-UrlStore urlStore = new();
+// UrlStore urlStore = new();
 app.MapGet("/", () => "Hello World!");
 
-app.MapPost("/shorten", (ShortenRequest request) =>
+app.MapPost("/shorten", async (ShortenRequest request, UrlStore urlStore) =>
 {
 
 
@@ -22,14 +27,14 @@ app.MapPost("/shorten", (ShortenRequest request) =>
         );
     }
 
-    string code = urlStore.Add(request.LongUrl!);
+    string code = await urlStore.Add(request.LongUrl!);
     return Results.Ok(new { shortCode = code });
 });
 
 
-app.MapGet("/{code}", (string code) =>
+app.MapGet("/{code}", async (string code, UrlStore urlStore) =>
 {
-    string? url = urlStore.TryGet(code);
+    string? url = await urlStore.TryGet(code);
     return url != null ? Results.Redirect(url!) : Results.Problem(
         detail: $"The short code '{code}' was not found.",
         statusCode: StatusCodes.Status404NotFound,

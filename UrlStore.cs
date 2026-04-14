@@ -1,19 +1,30 @@
+using Microsoft.EntityFrameworkCore;
+
 public class UrlStore
 {
-    private readonly Dictionary<string, string> _urlStorage = new();
-
-    public string Add(string longUrl)
+    private readonly AppDbContext _context;
+    public UrlStore(AppDbContext context)
     {
-        string code = GenerateCode();
-        _urlStorage[code] = longUrl;
-        return code;
+        this._context = context;
+    }
+
+    public async Task<string> Add(string longUrl)
+    {
+        var shortLink = new ShortLink
+        {
+            Code = GenerateCode(),
+            LongUrl = longUrl
+        };
+        _context.ShortLinks.Add(shortLink);
+        await _context.SaveChangesAsync();
+        return shortLink.Code;
 
     }
 
-    public string? TryGet(string code)
+    public async Task<string?> TryGet(string code)
     {
-        _urlStorage.TryGetValue(code, out string? longUrl);
-        return longUrl;
+        var obj = await _context.ShortLinks.FirstOrDefaultAsync(x => x.Code == code);
+        return obj?.LongUrl;
     }
 
     string GenerateCode()
