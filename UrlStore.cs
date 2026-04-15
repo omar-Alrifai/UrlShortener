@@ -1,11 +1,9 @@
-using Microsoft.EntityFrameworkCore;
-
 public class UrlStore
 {
-    private readonly AppDbContext _context;
-    public UrlStore(AppDbContext context)
+    private readonly IShortLinkRepository _repository;
+    public UrlStore(IShortLinkRepository repository)
     {
-        this._context = context;
+        this._repository = repository;
     }
 
     public async Task<string> Add(string longUrl)
@@ -15,15 +13,12 @@ public class UrlStore
             Code = GenerateCode(),
             LongUrl = longUrl
         };
-        _context.ShortLinks.Add(shortLink);
-        await _context.SaveChangesAsync();
+        await _repository.AddAsync(shortLink);
         return shortLink.Code;
-
     }
-
     public async Task<string?> TryGet(string code)
     {
-        var obj = await _context.ShortLinks.FirstOrDefaultAsync(x => x.Code == code);
+        var obj = await _repository.GetByCodeAsync(code);
         return obj?.LongUrl;
     }
 
