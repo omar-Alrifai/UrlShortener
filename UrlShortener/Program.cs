@@ -5,6 +5,7 @@ builder.Services.AddProblemDetails();
 builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IShortLinkRepository, EfShortLinkRepository>();
 builder.Services.AddScoped<IUrlShortenerService, UrlShortenerService>();
+builder.Services.AddScoped<ICodeGeneratorService, RandomCodeGeneratorService>();
 var app = builder.Build();
 
 app.UseStatusCodePages();
