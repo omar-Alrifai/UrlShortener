@@ -1,0 +1,25 @@
+services:
+  urlshortener-db:
+    image: postgres:latest
+    container_name: urlshortener-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: urlshortener
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+
+  urlshortener-api:
+    build: .
+    container_name: urlshortener-api
+    ports:
+      - "5021:8080"
+    depends_on:
+      - urlshortener-db
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=urlshortener-db;Database=urlshortener;Username=postgres;Password=password"
+
+volumes:
+  postgres_data:

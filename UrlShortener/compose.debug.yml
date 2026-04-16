@@ -1,0 +1,11 @@
+
+services:
+  urlshortener:
+    image: urlshortener
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        - configuration=Debug
+    volumes:
+      - ~/.vsdbg:c:\remote_debugger:rw
