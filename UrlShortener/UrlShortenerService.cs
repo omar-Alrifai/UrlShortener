@@ -1,10 +1,11 @@
 public class UrlShortenerService : IUrlShortenerService
 {
     private readonly IShortLinkRepository _shortLinkRepository;
-
-    public UrlShortenerService(IShortLinkRepository repository)
+    private readonly ICodeGeneratorService _codeGeneratorService;
+    public UrlShortenerService(IShortLinkRepository repository, ICodeGeneratorService codeGenerator)
     {
         this._shortLinkRepository = repository;
+        this._codeGeneratorService = codeGenerator;
     }
 
     public async Task<string?> GetUrlAsync(string code)
@@ -23,15 +24,11 @@ public class UrlShortenerService : IUrlShortenerService
 
         ShortLink shortLink = new ShortLink
         {
-            Code = GenerateCode(),
+            Code = _codeGeneratorService.Generate(),
             LongUrl = longUrl
         };
         await _shortLinkRepository.AddAsync(shortLink);
         return shortLink.Code;
     }
-    string GenerateCode()
-    {
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        return new string(Enumerable.Repeat(chars, 6).Select(s => s[Random.Shared.Next(chars.Length)]).ToArray());
-    }
+
 }
