@@ -5,10 +5,14 @@ public class UrlShortenerServiceTests
     private readonly Mock<IShortLinkRepository> _mockRepository;
     private readonly UrlShortenerService _urlShortenerService;
 
+    private readonly Mock<ICodeGeneratorService> _mockGenerator;
     public UrlShortenerServiceTests()
     {
         _mockRepository = new Mock<IShortLinkRepository>();
-        _urlShortenerService = new UrlShortenerService(_mockRepository.Object);
+        _mockGenerator = new Mock<ICodeGeneratorService>();
+        _mockGenerator.Setup(g => g.Generate()).Returns("ABC123");
+        _urlShortenerService = new UrlShortenerService(_mockRepository.Object, _mockGenerator.Object);
+
     }
     [Fact] // ADD THIS
     public async Task ShortenUrl_WithValidUrl_ReturnsShortCode()
