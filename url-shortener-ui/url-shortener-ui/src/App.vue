@@ -1,23 +1,24 @@
 <script setup>
 import { ref } from "vue";
 import axios from "axios";
+import ShortenForm from "./components/ShortenForm.vue";
 
 // reactive state
-const longUrl = ref("");
 const shortUrl = ref("");
 const error = ref("");
 const loading = ref(false);
 
+const apiBase = "http://localhost:5021";
+
 // function to call API
-const shortenUrl = async () => {
+const handleShorten = async (url) => {
   error.value = "";
   shortUrl.value = "";
   loading.value = true;
 
   try {
-    const apiBase = "http://localhost:5021";
     const response = await axios.post(`${apiBase}/shorten`, {
-      longUrl: longUrl.value,
+      longUrl: url,
     });
 
     shortUrl.value = `${apiBase}/${response.data.shortCode}`;
@@ -46,19 +47,7 @@ const shortenUrl = async () => {
     >
       <h4>Enter your LongUrl to make it short link</h4>
     </div>
-    <!-- Input -->
-    <input
-      v-model="longUrl"
-      type="text"
-      placeholder="Enter long URL"
-      style="width: 100%; padding: 10px; margin-bottom: 10px"
-      @keyup.enter="shortenUrl"
-    />
-
-    <!-- Button -->
-    <button @click="shortenUrl" :disabled="loading">
-      {{ loading ? "Loading..." : "Shorten" }}
-    </button>
+<ShortenForm :isLoading="loading" @submit="handleShorten"/>
 
     <!-- Result -->
     <div
