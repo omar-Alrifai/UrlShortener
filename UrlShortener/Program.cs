@@ -6,10 +6,19 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(builder
 builder.Services.AddScoped<IShortLinkRepository, EfShortLinkRepository>();
 builder.Services.AddScoped<IUrlShortenerService, UrlShortenerService>();
 builder.Services.AddScoped<ICodeGeneratorService, RandomCodeGeneratorService>();
-var app = builder.Build();
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod();
+    });
+});
+var app = builder.Build();
+app.UseCors();
 app.UseStatusCodePages();
 app.UseExceptionHandler();
+
 
 
 app.MapGet("/", () => "Hello World!");
