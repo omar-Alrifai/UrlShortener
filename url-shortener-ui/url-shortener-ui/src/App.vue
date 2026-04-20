@@ -3,11 +3,13 @@ import { ref } from "vue";
 import axios from "axios";
 import ShortenForm from "./components/ShortenForm.vue";
 import ResultDisplay from "./components/ResultDisplay.vue";
+import LinkHistory from "./components/LinkHistory.vue";
 
 // reactive state
 const shortUrl = ref("");
 const error = ref("");
 const loading = ref(false);
+const history=ref([]);
 
 const apiBase = "http://localhost:5021";
 
@@ -23,6 +25,7 @@ const handleShorten = async (url) => {
     });
 
     shortUrl.value = `${apiBase}/${response.data.shortCode}`;
+    history.value.push({longUrl:url,shortUrl:shortUrl.value});
   } catch (err) {
     error.value = err.response?.data?.detail || "An unexpected error occurred.";
   } finally {
@@ -51,18 +54,13 @@ const handleShorten = async (url) => {
 <ShortenForm :isLoading="loading" @submit="handleShorten"/>
 
     <!-- Result -->
-    <!-- <div
-      v-if="shortUrl"
-      style="margin-top: 20px; font-family: courier; font-size: 125%"
-    >
-      <p>Short URL:</p>
-      <a :href="shortUrl" target="_blank">{{ shortUrl }}</a>
-    </div> -->
+
     <ResultDisplay :shortUrl="shortUrl"/>
 
     <!-- Error -->
     <div v-if="error" style="color: red; margin-top: 20px">
       {{ error }}
     </div>
+    <LinkHistory :links="history"/>
   </div>
 </template>
