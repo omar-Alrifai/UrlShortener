@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import axios from "axios";
 import ShortenForm from "./components/ShortenForm.vue";
+import ResultDisplay from "./components/ResultDisplay.vue";
 
 // reactive state
 const shortUrl = ref("");
@@ -50,13 +51,14 @@ const handleShorten = async (url) => {
 <ShortenForm :isLoading="loading" @submit="handleShorten"/>
 
     <!-- Result -->
-    <div
+    <!-- <div
       v-if="shortUrl"
       style="margin-top: 20px; font-family: courier; font-size: 125%"
     >
       <p>Short URL:</p>
       <a :href="shortUrl" target="_blank">{{ shortUrl }}</a>
-    </div>
+    </div> -->
+    <ResultDisplay :shortUrl="shortUrl"/>
 
     <!-- Error -->
     <div v-if="error" style="color: red; margin-top: 20px">
