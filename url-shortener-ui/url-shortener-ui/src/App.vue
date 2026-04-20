@@ -1,40 +1,15 @@
 <script setup>
-import { ref } from "vue";
-import axios from "axios";
+import { useUrlShortener } from "./composables/useUrlShortener";
 import ShortenForm from "./components/ShortenForm.vue";
 import ResultDisplay from "./components/ResultDisplay.vue";
 import LinkHistory from "./components/LinkHistory.vue";
 import LoadingSpinner from "./components/LoadingSpinner.vue";
 import ErrorMessage from "./components/ErrorMessage.vue";
 
+const { shortUrl, error, loading, history, shortenUrl } = useUrlShortener();
 
-// reactive state
-const shortUrl = ref("");
-const error = ref("");
-const loading = ref(false);
-const history=ref([]);
-
-const apiBase = "http://localhost:5021";
-
-// function to call API
-const handleShorten = async (url) => {
-  error.value = "";
-  shortUrl.value = "";
-  loading.value = true;
-
-  try {
-
-    const response = await axios.post(`${apiBase}/shorten`, {
-      longUrl: url,
-    });
-
-    shortUrl.value = `${apiBase}/${response.data.shortCode}`;
-    history.value.push({longUrl:url,shortUrl:shortUrl.value});
-  } catch (err) {
-    error.value = err.response?.data?.detail || "An unexpected error occurred.";
-  } finally {
-    loading.value = false;
-  }
+const handleShorten = (url) => {
+shortenUrl(url);
 };
 </script>
 
