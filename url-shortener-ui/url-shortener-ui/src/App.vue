@@ -5,6 +5,7 @@ import ShortenForm from "./components/ShortenForm.vue";
 import ResultDisplay from "./components/ResultDisplay.vue";
 import LinkHistory from "./components/LinkHistory.vue";
 import LoadingSpinner from "./components/LoadingSpinner.vue";
+import ErrorMessage from "./components/ErrorMessage.vue";
 
 
 // reactive state
@@ -54,19 +55,12 @@ const handleShorten = async (url) => {
     >
       <h4>Enter your LongUrl to make it short link</h4>
     </div>
-<ShortenForm :isLoading="loading" @submit="handleShorten"/>
-
-
+    <ShortenForm :isLoading="loading" @submit="handleShorten"/>
     <!-- Result -->
-
     <ResultDisplay v-if="!loading && shortUrl" :shortUrl="shortUrl"/>
-
     <LoadingSpinner v-if="loading"/>
-
     <!-- Error -->
-    <div v-if="error" style="color: red; margin-top: 20px">
-      {{ error }}
-    </div>
+    <ErrorMessage :message="error"/>
     <LinkHistory :links="history"/>
   </div>
 </template>
