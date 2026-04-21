@@ -11,6 +11,8 @@ public class UrlShortenerService : IUrlShortenerService
     public async Task<string?> GetUrlAsync(string code)
     {
         var shortLink = await _shortLinkRepository.GetByCodeAsync(code);
+        if (shortLink == null) return null;
+        await ProcessRedirectAsync(code);
         return shortLink?.LongUrl;
     }
 
@@ -29,6 +31,11 @@ public class UrlShortenerService : IUrlShortenerService
         };
         await _shortLinkRepository.AddAsync(shortLink);
         return shortLink.Code;
+    }
+
+    public async Task ProcessRedirectAsync(string code)
+    {
+        await _shortLinkRepository.IncrementClicksAsync(code);
     }
 
 }
