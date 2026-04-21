@@ -4,4 +4,6 @@ public class ShortLink
     public required string? Code { get; set; } = string.Empty;
     public required string? LongUrl { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    public int Clicks { get; set; }
 }
