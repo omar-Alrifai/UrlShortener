@@ -27,8 +27,8 @@ app.MapPost("/shorten", async (ShortenRequest request, IUrlShortenerService urlS
 {
     try
     {
-        string code = await urlShortenerService.ShortenUrlAsync(request.LongUrl!);
-        return Results.Ok(new { shortCode = code });
+        var link = await urlShortenerService.ShortenUrlAsync(request.LongUrl!);
+        return Results.Ok(new { shortLink = link });
     }
     catch (ArgumentException ex)
     {

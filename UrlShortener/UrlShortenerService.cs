@@ -12,11 +12,11 @@ public class UrlShortenerService : IUrlShortenerService
     {
         var shortLink = await _shortLinkRepository.GetByCodeAsync(code);
         if (shortLink == null) return null;
-        await ProcessRedirectAsync(code);
-        return shortLink?.LongUrl;
+        await _shortLinkRepository.IncrementClicksAsync(code);
+        return shortLink.LongUrl;
     }
 
-    public async Task<string> ShortenUrlAsync(string longUrl)
+    public async Task<ShortLink> ShortenUrlAsync(string longUrl)
     {
         var (isValid, errorMessage) = UrlValidator.Validate(longUrl);
         if (!isValid)
@@ -27,15 +27,11 @@ public class UrlShortenerService : IUrlShortenerService
         ShortLink shortLink = new ShortLink
         {
             Code = _codeGeneratorService.Generate(),
-            LongUrl = longUrl
+            LongUrl = longUrl,
+            Clicks = 0
         };
         await _shortLinkRepository.AddAsync(shortLink);
-        return shortLink.Code;
-    }
-
-    public async Task ProcessRedirectAsync(string code)
-    {
-        await _shortLinkRepository.IncrementClicksAsync(code);
+        return shortLink;
     }
 
 }
