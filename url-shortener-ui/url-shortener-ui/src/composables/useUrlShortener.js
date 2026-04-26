@@ -1,42 +1,45 @@
-import {ref} from "vue";
+import { ref } from "vue";
 import axios from "axios";
-
 export function useUrlShortener() {
-const shortUrl=ref("");
-const error=ref("");
-const loading=ref(false);
-const history=ref([]);
+  const shortUrl = ref("");
+  const error = ref("");
+  const loading = ref(false);
+  const history = ref([]);
 
-const apiBase="http://localhost:5021";
+  const apiBase = "http://localhost:5021";
 
-const shortenUrl=async(url)=>{
-    error.value ="";
-    shortUrl.value="";
-    loading.value=true;
+  const shortenUrl = async (url) => {
+    error.value = "";
+    shortUrl.value = "";
+    loading.value = true;
 
     try {
-        const response=await axios.post(`${apiBase}/shorten`,{
-            longUrl:url,
-        });
-        const generatedLink=`${apiBase}/${response.data.shortCode}`;
-        shortUrl.value=generatedLink;
+      const response = await axios.post(`${apiBase}/shorten`, {
+        longUrl: url,
+      });
+      const link = response.data.shortLink;
 
-        history.value.push({
-            longUrl: url,
-            shortUrl: generatedLink
-        });
+      const generatedLink = `${apiBase}/${link.code}`;
+      shortUrl.value = generatedLink;
+
+      history.value.push({
+        longUrl: link.longUrl,
+        shortUrl: generatedLink,
+        clicks: link.clicks,
+      });
     } catch (err) {
-        error.value = err.response?.data?.detail || "An unexpected error occurred.";
-    }finally{
-        loading.value = false;
+      error.value =
+        err.response?.data?.detail || "An unexpected error occurred.";
+    } finally {
+      loading.value = false;
     }
-};
+  };
 
-return {
-   shortUrl,
+  return {
+    shortUrl,
     error,
     loading,
     history,
-    shortenUrl
-};
+    shortenUrl,
+  };
 }
