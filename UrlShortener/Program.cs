@@ -27,7 +27,7 @@ app.MapPost("/shorten", async (ShortenRequest request, IUrlShortenerService urlS
 {
     try
     {
-        var link = await urlShortenerService.ShortenUrlAsync(request.LongUrl!);
+        var link = await urlShortenerService.ShortenUrlAsync(request.LongUrl!, request.CustomCode);
         return Results.Ok(new { shortLink = link });
     }
     catch (ArgumentException ex)
@@ -37,6 +37,14 @@ app.MapPost("/shorten", async (ShortenRequest request, IUrlShortenerService urlS
            statusCode: StatusCodes.Status400BadRequest,
            title: "Validation Error"
        );
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.Problem(
+           detail: ex.Message,
+           statusCode: StatusCodes.Status409Conflict,
+           title: "Duplicate Alias Error"
+        );
     }
 });
 
