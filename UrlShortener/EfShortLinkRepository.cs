@@ -23,5 +23,8 @@ public class EfShortLinkRepository : IShortLinkRepository
     {
         await _context.ShortLinks.Where(s => s.Code == code).ExecuteUpdateAsync(s => s.SetProperty(x => x.Clicks, x => x.Clicks + 1));
     }
-
+    public async Task<bool> ExistsByCodeAsync(string code)
+    {
+        return await _context.ShortLinks.AnyAsync(s => s.Code == code);
+    }
 }

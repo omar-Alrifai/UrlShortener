@@ -4,4 +4,5 @@ public interface IShortLinkRepository
     Task AddAsync(ShortLink shortLink);
 
     Task IncrementClicksAsync(string code);
+    Task<bool> ExistsByCodeAsync(string code);
 }
