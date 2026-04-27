@@ -52,6 +52,5 @@ app.MapGet("/{code}", async (string code, IUrlShortenerService urlShortenerServi
 });
 app.Run();
 
-record ShortenRequest(string? LongUrl);
 
 
