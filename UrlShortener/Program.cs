@@ -6,6 +6,7 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(builder
 builder.Services.AddScoped<IShortLinkRepository, EfShortLinkRepository>();
 builder.Services.AddScoped<IUrlShortenerService, UrlShortenerService>();
 builder.Services.AddScoped<ICodeGeneratorService, RandomCodeGeneratorService>();
+builder.Services.AddScoped<IUniqueCodeGeneratorService, UniqueCodeGeneratorService>();
 
 builder.Services.AddCors(options =>
 {
