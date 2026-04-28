@@ -19,6 +19,6 @@ public static class ValidatorHelper
     public static bool IsValidCustomCode(string code)
     {
         return code.Length >= 6 && code.Length <= 10 &&
-               Regex.IsMatch(code, "^[a-zA-Z0-9]+$");
+               Regex.IsMatch(code, @"^[a-zA-Z0-9\-_]+$");
     }
 }
