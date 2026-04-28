@@ -8,8 +8,8 @@ import ErrorMessage from "./components/ErrorMessage.vue";
 
 const { shortUrl, error, loading, history, shortenUrl } = useUrlShortener();
 
-const handleShorten = (url) => {
-shortenUrl(url);
+const handleShorten = (url, customAlias) => {
+  shortenUrl(url, customAlias);
 };
 </script>
 
