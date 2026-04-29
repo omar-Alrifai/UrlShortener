@@ -6,4 +6,5 @@ public class ShortLink
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public int Clicks { get; set; }
+    public DateTime? ExpiresAt { get; set; }
 }
