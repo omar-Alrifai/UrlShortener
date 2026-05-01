@@ -12,16 +12,21 @@ public class UrlShortenerService : IUrlShortenerService
     {
         var shortLink = await _shortLinkRepository.GetByCodeAsync(code);
         if (shortLink == null) return null;
+        if (shortLink.ExpiresAt.HasValue && shortLink.ExpiresAt <= DateTime.UtcNow)
+        {
+            throw new LinkExpiredException("Your short link code has been expired..");
+        }
         await _shortLinkRepository.IncrementClicksAsync(code);
         return shortLink.LongUrl;
     }
 
-    public async Task<ShortLink> ShortenUrlAsync(string longUrl, string? customCode = null)
+    public async Task<ShortLink> ShortenUrlAsync(string longUrl, string? customCode = null, DateTime? expiresAt = null)
     {
         var (isValid, errorMessage) = ValidatorHelper.Validate(longUrl);
         if (!isValid)
             throw new ArgumentException(errorMessage);
-
+        if (expiresAt.HasValue && expiresAt.Value.ToUniversalTime() <= DateTime.UtcNow)
+            throw new ArgumentException("Expiration date must be in the future.");
         string finalCode;
         if (!string.IsNullOrWhiteSpace(customCode))
         {
@@ -37,11 +42,16 @@ public class UrlShortenerService : IUrlShortenerService
         {
             finalCode = await _uniqueCodeGeneratorService.GenerateUniqueCodeAsync();
         }
+
         var shortLink = new ShortLink
         {
             Code = finalCode,
             LongUrl = longUrl,
             Clicks = 0,
+            // ExpiresAt = DateTime.UtcNow.AddMonths(1),
+            // ExpiresAt = DateTime.UtcNow.AddMinutes(1)
+            ExpiresAt = expiresAt?.ToUniversalTime(),
+
         };
         await _shortLinkRepository.AddAsync(shortLink);
         return shortLink;
