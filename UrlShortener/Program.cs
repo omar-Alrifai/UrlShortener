@@ -28,7 +28,7 @@ app.MapPost("/shorten", async (ShortenRequest request, IUrlShortenerService urlS
 {
     try
     {
-        var link = await urlShortenerService.ShortenUrlAsync(request.LongUrl!, request.CustomCode);
+        var link = await urlShortenerService.ShortenUrlAsync(request.LongUrl!, request.CustomCode, request.ExpiresAt);
         return Results.Ok(new { shortLink = link });
     }
     catch (ArgumentException ex)
@@ -52,12 +52,24 @@ app.MapPost("/shorten", async (ShortenRequest request, IUrlShortenerService urlS
 
 app.MapGet("/{code}", async (string code, IUrlShortenerService urlShortenerService) =>
 {
-    string? url = await urlShortenerService.GetUrlAsync(code);
-    return url != null ? Results.Redirect(url) : Results.Problem(
-        detail: $"The short code '{code}' was not found.",
-        statusCode: StatusCodes.Status404NotFound,
-        title: "Short code not found"
-    );
+    try
+    {
+        string? url = await urlShortenerService.GetUrlAsync(code);
+        return url != null ? Results.Redirect(url) : Results.Problem(
+            detail: $"The short code '{code}' was not found.",
+            statusCode: StatusCodes.Status404NotFound,
+            title: "Short code not found"
+        );
+    }
+    catch (LinkExpiredException ex)
+    {
+        return Results.Problem(
+        detail: ex.Message,
+        statusCode: StatusCodes.Status410Gone,
+        title: "Link Expired"
+        );
+    }
+
 });
 app.Run();
 
