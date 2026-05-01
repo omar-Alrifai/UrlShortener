@@ -1,5 +1,6 @@
 public record ShortenRequest
 (
 string? LongUrl,
-string? CustomCode
+string? CustomCode,
+DateTime? ExpiresAt
 );
