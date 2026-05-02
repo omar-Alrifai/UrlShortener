@@ -3,6 +3,8 @@ import { ref } from 'vue';
 
 const inputUrl = ref("");
 const customAlias = ref("");
+const expiresAt = ref("");
+
 
 const props = defineProps({ 
   isLoading: Boolean 
@@ -11,9 +13,10 @@ const emit = defineEmits(["submit"]);
 
 const handleSubmit = () => {
   if (props.isLoading) return;
-  emit("submit", inputUrl.value, customAlias.value);
+  emit("submit", inputUrl.value, customAlias.value, expiresAt.value);
   inputUrl.value = "";
   customAlias.value = "";
+  expiresAt.value="";
 };
 </script>
 
@@ -41,6 +44,16 @@ const handleSubmit = () => {
         />
         <label class="input-label">Custom Alias</label>
       </div>
+
+      <div class="input-wrapper">
+        <input
+          v-model="expiresAt"
+          type="datetime-local"
+          :disabled="isLoading"
+        />
+        <label class="input-label">Expires At (optional) </label>
+      </div>
+
     </div>
 
     <button 
@@ -114,6 +127,7 @@ const handleSubmit = () => {
 }
 
 .input-wrapper input:focus + .input-label,
+.input-label
 .input-wrapper input:not(:placeholder-shown) + .input-label {
   top: -8px;
   left: 12px;
