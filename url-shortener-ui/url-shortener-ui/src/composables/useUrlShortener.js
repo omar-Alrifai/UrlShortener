@@ -14,8 +14,6 @@ export function useUrlShortener() {
   const toUtcIso = (localDateTime) => {
     if (!localDateTime) return null;
     const date = new Date(localDateTime);
-    console.log(date.getTime());
-    console.log(isNaN(date.getTime()));
     if (isNaN(date.getTime())) return null;
     return date.toISOString();
   };
@@ -25,9 +23,7 @@ export function useUrlShortener() {
     error.value = "";
     shortUrl.value = "";
     loading.value = true;
-        currentLink.value = null;
-
-
+    currentLink.value = null;
     try {
       const payload = { longUrl: url };
       if (customAlias && customAlias.trim() !== "") {
