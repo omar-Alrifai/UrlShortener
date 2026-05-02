@@ -6,10 +6,10 @@ import LinkHistory from "./components/LinkHistory.vue";
 import LoadingSpinner from "./components/LoadingSpinner.vue";
 import ErrorMessage from "./components/ErrorMessage.vue";
 
-const { shortUrl, error, loading, history, shortenUrl } = useUrlShortener();
+const { shortUrl,error, loading, history, shortenUrl ,currentLink} = useUrlShortener();
 
-const handleShorten = (url, customAlias) => {
-  shortenUrl(url, customAlias);
+const handleShorten = (url, customAlias, expiresAt) => {
+  shortenUrl(url, customAlias,expiresAt);
 };
 </script>
 
@@ -32,7 +32,7 @@ const handleShorten = (url, customAlias) => {
     </div>
     <ShortenForm :isLoading="loading" @submit="handleShorten"/>
     <!-- Result -->
-    <ResultDisplay v-if="!loading && shortUrl" :shortUrl="shortUrl"/>
+    <ResultDisplay v-if="!loading && shortUrl" :shortUrl="shortUrl":link="currentLink"/>
     <LoadingSpinner v-if="loading"/>
     <!-- Error -->
     <ErrorMessage :message="error"/>
