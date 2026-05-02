@@ -1,15 +1,22 @@
 <script setup>
-import { ref } from 'vue';
-
+import { ref,computed } from 'vue';
 const inputUrl = ref("");
 const customAlias = ref("");
 const expiresAt = ref("");
-
-
 const props = defineProps({ 
   isLoading: Boolean 
 });
 const emit = defineEmits(["submit"]);
+
+const minDateTime = computed(() => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+});
 
 const handleSubmit = () => {
   if (props.isLoading) return;
@@ -49,6 +56,7 @@ const handleSubmit = () => {
         <input
           v-model="expiresAt"
           type="datetime-local"
+          :min="minDateTime"
           :disabled="isLoading"
         />
         <label class="input-label">Expires At (optional) </label>
