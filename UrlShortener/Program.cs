@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddProblemDetails();
@@ -15,14 +17,37 @@ builder.Services.AddCors(options =>
         policy.WithOrigins("http://localhost:5173").AllowAnyHeader().AllowAnyMethod();
     });
 });
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "URL Shortener API",
+        Version = "v1",
+        Description = "A simple URL shortener with custom aliases, click tracking, and link expiry.",
+        Contact = new OpenApiContact
+        {
+            Name = "Omar ri",
+            Email = "omar.bunisher2023@gmail.com"
+        }
+    });
+
+    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    options.IncludeXmlComments(xmlPath);
+
+});
+
 var app = builder.Build();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "URL Shortener API v1"));
+}
+
 app.UseCors();
 app.UseStatusCodePages();
 app.UseExceptionHandler();
-
-
-
-app.MapGet("/", () => "Hello World!");
 
 app.MapPost("/shorten", async (ShortenRequest request, IUrlShortenerService urlShortenerService) =>
 {
@@ -49,7 +74,6 @@ app.MapPost("/shorten", async (ShortenRequest request, IUrlShortenerService urlS
     }
 });
 
-
 app.MapGet("/{code}", async (string code, IUrlShortenerService urlShortenerService) =>
 {
     try
@@ -71,6 +95,7 @@ app.MapGet("/{code}", async (string code, IUrlShortenerService urlShortenerServi
     }
 
 });
+
 app.Run();
 
 
