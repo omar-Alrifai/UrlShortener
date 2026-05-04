@@ -72,7 +72,14 @@ app.MapPost("/shorten", async (ShortenRequest request, IUrlShortenerService urlS
            title: "Duplicate Alias Error"
         );
     }
-});
+})
+.WithSummary("Create a shortened URL")
+.WithDescription("Accepts a long URL with optional custom alias and expiration date, and returns a shortened link.")
+.Produces<ShortLink>(StatusCodes.Status200OK)
+.ProducesProblem(StatusCodes.Status400BadRequest)
+.ProducesProblem(StatusCodes.Status409Conflict)
+.WithTags("UrlShortener")
+.WithName("ShortenUrl");
 
 app.MapGet("/{code}", async (string code, IUrlShortenerService urlShortenerService) =>
 {
@@ -94,7 +101,14 @@ app.MapGet("/{code}", async (string code, IUrlShortenerService urlShortenerServi
         );
     }
 
-});
+})
+.WithSummary("Redirect to original URL")
+.WithDescription("Redirects using a short code. Returns 404 if not found, 410 if expired.")
+.Produces(StatusCodes.Status302Found)
+.ProducesProblem(StatusCodes.Status404NotFound)
+.ProducesProblem(StatusCodes.Status410Gone)
+.WithTags("UrlShortener")
+.WithName("RedirectToLongUrl");
 
 app.Run();
 
