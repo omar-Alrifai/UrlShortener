@@ -53,7 +53,11 @@ export function useUrlShortener() {
         error.value = err.response?.data?.detail || "Custom code already taken. Please choose another.";
       } else if (err.response?.status === 410) {
         error.value = err.response?.data?.detail || "This link has expired.";
-      } else {
+      }
+      else if (err.response?.status ===429){
+        error.value=err.response?.data?.detail ||"Too many requests. Please wait a moment.";
+      } 
+      else {
         error.value = err.response?.data?.detail || "An unexpected error occurred.";
       }
     } finally {
