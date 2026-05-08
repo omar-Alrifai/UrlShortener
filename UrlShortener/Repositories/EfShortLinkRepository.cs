@@ -18,4 +18,13 @@ public class EfShortLinkRepository : IShortLinkRepository
     {
         return await _context.ShortLinks.FirstOrDefaultAsync(s => s.Code == code);
     }
+
+    public async Task IncrementClicksAsync(string code)
+    {
+        await _context.ShortLinks.Where(s => s.Code == code).ExecuteUpdateAsync(s => s.SetProperty(x => x.Clicks, x => x.Clicks + 1));
+    }
+    public async Task<bool> ExistsByCodeAsync(string code)
+    {
+        return await _context.ShortLinks.AnyAsync(s => s.Code == code);
+    }
 }

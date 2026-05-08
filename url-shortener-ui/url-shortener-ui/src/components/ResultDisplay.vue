@@ -1,8 +1,10 @@
 <script setup>
-import { ref } from 'vue';
+import { ref ,computed} from 'vue';
 const copied=ref(false);
 const props=defineProps({
-    shortUrl:String
+    shortUrl:String,
+    link: Object,
+
 });
 
 const copyToClipboard=async()=>{
@@ -17,18 +19,33 @@ const copyToClipboard=async()=>{
     console.error("Failed to copy!",error);
    }
 }
+
+const formattedExpiry = computed(() => {
+  if (!props.link?.expiresAt) return null;
+  const date = new Date(props.link.expiresAt);
+  return date.toLocaleString();
+});
+
 </script>
 
 <template>
- <div
-      v-if="shortUrl"
-      style="margin-top: 20px; font-family: courier; font-size: 125%"
-    >
-      <p>Short URL:</p>
-      <a :href="shortUrl" target="_blank">{{ shortUrl }}</a>
-      <br /><br/>
-      <button @click="copyToClipboard" style="cursor: pointer;">
-        {{ copied?"Copied":"Copy to clipboard" }}
-      </button>
+  <div
+    v-if="shortUrl"
+    style="margin-top: 20px; font-family: courier; font-size: 125%"
+  >
+    <p>Short URL:</p>
+    <a :href="shortUrl" target="_blank">{{ shortUrl }}</a>
+    
+    <div v-if="formattedExpiry" style="margin-top: 10px; font-size: 0.9em; color: #666;">
+      Expires: {{ formattedExpiry }}
     </div>
-</template> 
+    <div v-else style="margin-top: 10px; font-size: 0.9em; color: #2e7d32;">
+       Never expires
+    </div>
+    
+    <br /><br/>
+    <button @click="copyToClipboard" style="cursor: pointer;">
+      {{ copied ? "Copied" : "Copy to clipboard" }}
+    </button>
+  </div>
+</template>

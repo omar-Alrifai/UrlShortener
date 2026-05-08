@@ -17,5 +17,6 @@ RUN dotnet publish "UrlShortener.csproj" -c $configuration -o /app/publish /p:Us
 
 FROM base AS final
 WORKDIR /app
+EXPOSE 80
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "UrlShortener.dll"]
