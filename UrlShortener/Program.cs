@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 using System.Reflection;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddProblemDetails();
@@ -38,6 +40,31 @@ builder.Services.AddSwaggerGen(options =>
 
 });
 
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddPolicy("PostShortenPolicy", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "anonymous",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                AutoReplenishment = true,
+                PermitLimit = 10,
+                Window = TimeSpan.FromMinutes(1),
+                QueueLimit = 0
+            }));
+
+    options.OnRejected = async (context, cancellationToken) =>
+    {
+        context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+        context.HttpContext.Response.Headers.RetryAfter = "60";
+        await context.HttpContext.Response.WriteAsJsonAsync(new
+        {
+            detail = "Too many requests. Please try again in a minute.",
+            title = "Rate Limit Exceeded"
+        }, cancellationToken);
+    };
+});
+
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
@@ -48,6 +75,7 @@ if (app.Environment.IsDevelopment())
 app.UseCors();
 app.UseStatusCodePages();
 app.UseExceptionHandler();
+app.UseRateLimiter();
 
 app.MapPost("/shorten", async (ShortenRequest request, IUrlShortenerService urlShortenerService) =>
 {
