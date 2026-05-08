@@ -107,6 +107,7 @@ app.MapPost("/shorten", async (ShortenRequest request, IUrlShortenerService urlS
 .Produces<ShortLink>(StatusCodes.Status200OK)
 .ProducesProblem(StatusCodes.Status400BadRequest)
 .ProducesProblem(StatusCodes.Status409Conflict)
+.ProducesProblem(StatusCodes.Status429TooManyRequests)
 .WithTags("UrlShortener")
 .WithName("ShortenUrl");
 
