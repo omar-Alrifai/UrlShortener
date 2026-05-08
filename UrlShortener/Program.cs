@@ -103,6 +103,7 @@ app.MapPost("/shorten", async (ShortenRequest request, IUrlShortenerService urlS
 })
 .WithSummary("Create a shortened URL")
 .WithDescription("Accepts a long URL with optional custom alias and expiration date, and returns a shortened link.")
+.RequireRateLimiting("PostShortenPolicy")
 .Produces<ShortLink>(StatusCodes.Status200OK)
 .ProducesProblem(StatusCodes.Status400BadRequest)
 .ProducesProblem(StatusCodes.Status409Conflict)
